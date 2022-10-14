@@ -570,6 +570,8 @@ h1 {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
   padding: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
 .memory-cell > div {
@@ -640,23 +642,9 @@ h1 {
   margin: 0.5rem;
 }
 
-.my-4 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.my-8 {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
 .my-10 {
   margin-top: 2.5rem;
   margin-bottom: 2.5rem;
-}
-
-.mt-8 {
-  margin-top: 2rem;
 }
 
 .flex {
@@ -665,10 +653,6 @@ h1 {
 
 .table {
   display: table;
-}
-
-.h-20 {
-  height: 5rem;
 }
 
 .h-40 {
