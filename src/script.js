@@ -122,13 +122,12 @@ function compile() {
     if (dataLines[i][0] === "#") continue; //ignore comments
     const value = parseInt(dataLines[i]);
     if (!(value >= 0 && value <= 255)) {
-      console.log("VAL: " + value);
       error("COMPILATION ERROR\n Data must be in range 0-255");
       return;
     }
     compiledDataLines.push(toBinary(value, 8));
   }
-  console.log(compiledDataLines);
+
   loadDataToMemory(compiledDataLines);
   loadToInstructionMemory(compiledLines);
 }
@@ -187,12 +186,6 @@ function loadExample() {
 }
 
 function stopProgram() {
-  const highestId = window.setTimeout(() => {
-    for (let i = highestId; i < timeOuts.length; i++) {
-      window.clearInterval(i);
-    }
-  }, 0);
-
   stop = true;
 
   compileButton.disabled = false;
@@ -227,7 +220,7 @@ async function run() {
   for (let i = 0; i < memorySize; i++) {
     const address = toBinary(i, 4);
     const line = document.getElementById("data-memory-" + address).innerHTML;
-    console.log("A: " + line);
+
     dataMemory.push(line);
   }
 
@@ -244,7 +237,7 @@ async function run() {
   }
   const padChar = "-";
   function log(line) {
-    consoleDiv.innerHTML += "<div>" + line + "</div>";
+    consoleDiv.innerHTML += `<div class="border-white border p-1">${line}</div>`;
     consoleDiv.scrollTop = consoleDiv.scrollHeight;
   }
   function formatRegister(r) {
@@ -340,6 +333,7 @@ async function run() {
 
     logRegisters();
     updateDisplay();
+    console.log("T: " + 1000 / clock);
     await sleep(1000 / clock);
   }
   compileButton.disabled = false;
