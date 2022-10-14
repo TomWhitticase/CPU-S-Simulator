@@ -4,7 +4,7 @@
 
 @layer components {
   body {
-    @apply font-mono text-base m-0;
+    @apply font-mono text-sm lg:text-base m-0;
   }
   h1 {
     @apply text-xl font-bold m-2;

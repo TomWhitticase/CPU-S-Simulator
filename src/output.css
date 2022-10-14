@@ -554,8 +554,15 @@ video {
 body {
   margin: 0px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 1rem;
-  line-height: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
 }
 
 h1 {
@@ -696,8 +703,9 @@ textarea {
   border-collapse: separate;
 }
 
-.border-spacing-x-6 {
-  --tw-border-spacing-x: 1.5rem;
+.border-spacing-4 {
+  --tw-border-spacing-x: 1rem;
+  --tw-border-spacing-y: 1rem;
   border-spacing: var(--tw-border-spacing-x) var(--tw-border-spacing-y);
 }
 
@@ -789,6 +797,11 @@ textarea {
 
 .p-1 {
   padding: 0.25rem;
+}
+
+.py-10 {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
 }
 
 .px-1 {

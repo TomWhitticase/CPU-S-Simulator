@@ -18,11 +18,14 @@
       <h1><i class="bi bi-cpu-fill p-4"></i>CPU-S Simulator</h1>
     </header>
     <div class="flex justify-center m-8">
-      CPU-S is a simple example CPU based on the harvard architecture. It
-      supports a memory of 16 data variables of 8 bits each and 16 instructions
-      of 7 bits each (3 bits for the instruction and 4 bits for an address).
-      CPU-S can perform addittion, subtraction, multiplication, and conditional
-      jump.
+      <span>
+        CPU-S is a simple example CPU based on the harvard architecture. It
+        supports a memory of 16 data variables of 8 bits each and 16
+        instructions of 7 bits each (3 bits for the instruction and 4 bits for
+        an address). CPU-S can perform addittion, subtraction, multiplication,
+        and conditional jump.
+        <a href="#instruction-set" class="underline">View instruction set.</a>
+      </span>
     </div>
     <div class="flex flex-row flex-wrap justify-center">
       <div class="control-panel flex flex-col gap-2 p-2">
@@ -116,7 +119,7 @@
       </div>
       <div class="flex flex-col m-2">
         <h1>CPU</h1>
-        <div class="flex flex-col border bg-gray-300 gap-2">
+        <div class="flex flex-col border bg-gray-300 gap-2 m-2">
           <div id="control-unit" class="p-2 m-2">
             <h1>Control Unit</h1>
             <span class="flex">
@@ -196,13 +199,13 @@
         <h1>Log</h1>
         <div
           id="console"
-          class="flex flex-col overflow-y-auto bg-black text-white h-40 text-xs lg:text-base"
+          class="flex flex-col overflow-y-auto bg-black text-white h-40 text-xs lg:text-base m-2"
         ></div>
       </div>
     </div>
     <div class="flex flex-col justify-center items-center my-10">
       <h1>Instruction Set</h1>
-      <table class="border-separate border-spacing-x-6">
+      <table id="instruction-set" class="border-separate border-spacing-4">
         <tr>
           <th class="text-left">Opcode</th>
           <th class="text-left">Name</th>
@@ -261,7 +264,7 @@
         </tr>
       </table>
     </div>
-    <footer class="flex justify-center p-4 bg-black text-white">
+    <footer class="flex justify-center py-10 bg-black text-white">
       Made by
       <a
         href="https://portfolio-tomwhitticase.vercel.app/"
