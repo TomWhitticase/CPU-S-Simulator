@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  body {
+    @apply font-mono;
+  }
+  h1 {
+    @apply text-xl font-bold m-2;
+  }
+
+  .memory-cell {
+    @apply flex justify-between items-center bg-white p-1 m-1;
+  }
+  .memory-cell > div {
+    @apply bg-black text-white mx-2 px-1;
+  }
+
+  .btn-1 {
+    @apply bg-blue-600 rounded text-white p-2 m-2;
+  }
+  .disabled {
+    @apply bg-gray-400;
+  }
+
+  #control-unit {
+    @apply bg-yellow-500;
+  }
+  #arithmetic-logic-unit {
+    @apply bg-red-400;
+  }
+
+  #memory {
+    @apply bg-green-500;
+  }
+
+  .box {
+    @apply bg-white p-1 m-1 flex flex-col content-between;
+  }
+  .box > div {
+    @apply bg-black text-white p-1 h-8;
+  }
+}

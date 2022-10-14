@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>CPU-S</title>
+    <link rel="stylesheet" href="output.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+    />
+    <link rel="icon" type="images/x-icon" href="images/cpu.png" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header class="bg-black text-white p-4">
+      <h1><i class="bi bi-cpu-fill p-4"></i>CPU-S Simulator</h1>
+    </header>
+    <div class="flex justify-center m-8">
+      CPU-S is a simple example CPU based on the harvard architecture. It
+      supports a memory of 16 data variables of 8 bits each and 16 instructions
+      of 7 bits each (3 bits for the instruction and 4 bits for an address).
+      CPU-S can perform addittion, subtraction, multiplication, and conditional
+      jump.
+    </div>
+    <div class="flex flex-row flex-wrap justify-center">
+      <div class="control-panel flex flex-col gap-2 p-2">
+        <select
+          id="select-example"
+          onclick="loadExample()"
+          class="border border-black"
+        >
+          <option>Load example program</option>
+          <option>Add 2 numbers</option>
+          <option>Factorial of 5</option>
+          <option>Compare 2 numbers</option>
+        </select>
+        <div class="flex gap-5">
+          <div>
+            <h1>Instructions</h1>
+            <div class="flex">
+              <div class="flex flex-col p-1">
+                <div>00</div>
+                <div>01</div>
+                <div>02</div>
+                <div>03</div>
+                <div>04</div>
+                <div>05</div>
+                <div>06</div>
+                <div>07</div>
+                <div>08</div>
+                <div>09</div>
+                <div>10</div>
+                <div>11</div>
+                <div>12</div>
+                <div>13</div>
+                <div>14</div>
+                <div>15</div>
+              </div>
+              <textarea
+                id="code-editor"
+                rows="16"
+                cols="12"
+                class="border-black border resize-none"
+              ></textarea>
+            </div>
+          </div>
+
+          <div>
+            <h1>Data</h1>
+            <div class="flex">
+              <div class="flex flex-col p-1">
+                <div>00</div>
+                <div>01</div>
+                <div>02</div>
+                <div>03</div>
+                <div>04</div>
+                <div>05</div>
+                <div>06</div>
+                <div>07</div>
+                <div>08</div>
+                <div>09</div>
+                <div>10</div>
+                <div>11</div>
+                <div>12</div>
+                <div>13</div>
+                <div>14</div>
+                <div>15</div>
+              </div>
+              <textarea
+                id="code-editor-data"
+                rows="16"
+                cols="5"
+                class="border-black border resize-none"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <button id="compile" class="btn-1" onclick="compile()">Compile</button>
+        <button id="run" class="btn-1" onclick="run()">Run</button>
+      </div>
+      <div class="flex flex-col m-2">
+        <h1>CPU</h1>
+        <div class="flex flex-col border bg-gray-300 gap-2">
+          <div id="control-unit" class="p-2 m-2">
+            <h1>Control Unit</h1>
+            <span class="flex">
+              <div class="box">
+                Clock Speed (Hz)
+                <input
+                  id="clock"
+                  type="number"
+                  min="1"
+                  value="5"
+                  class="border border-black p-1 w-40"
+                />
+              </div>
+              <div class="box">
+                Instruction Pointer
+                <div id="instruction-pointer">0000</div>
+              </div>
+            </span>
+            <span class="flex">
+              <div class="box">
+                Instruction Register
+                <div id="instruction-register">000</div>
+              </div>
+              <div class="box">
+                Instruction Decoder
+                <div id="instruction-decoder"></div>
+              </div>
+            </span>
+            <span class="flex">
+              <div class="box">
+                Data Pointer 1
+                <div id="data-pointer-1">0000</div>
+              </div>
+              <div class="box">
+                Data Pointer 2
+                <div id="data-pointer-2">0000</div>
+              </div>
+            </span>
+          </div>
+          <div id="arithmetic-logic-unit" class="p-2 m-2">
+            <h1>Arithmetic Logic Unit</h1>
+            <div class="flex">
+              <div class="box">
+                Data Register 1
+                <div id="data-register-1">00000000</div>
+              </div>
+              <div class="box">
+                Data Register 2
+                <div id="data-register-2">00000000</div>
+              </div>
+            </div>
+            <div class="box">
+              Accumulator
+              <div id="accumulator">00000000</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="m-2">
+        <h1>Memory</h1>
+        <div id="memory" class="flex p-2 gap-4">
+          <div class="flex flex-col">
+            <h1>Instructions</h1>
+            <div id="instruction-memory" class=""></div>
+          </div>
+          <div class="flex flex-col">
+            <h1>Data</h1>
+            <div id="data-memory" class=""></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-center">
+      <div class="w-[50rem]">
+        <h1>Register Log</h1>
+        <div
+          id="console"
+          class="flex flex-col overflow-y-auto bg-black text-white h-40"
+        ></div>
+      </div>
+    </div>
+    <div class="flex flex-col justify-center items-center my-10">
+      <h1>Instruction Set</h1>
+      <table class="border-separate border-spacing-x-6">
+        <tr>
+          <th class="text-left">Opcode</th>
+          <th class="text-left">Name</th>
+          <th class="text-left">Action</th>
+        </tr>
+        <tr>
+          <td>000</td>
+          <td>JUMP</td>
+          <td>
+            If Data Register 1 does not equal 0 then set Instruction Pointer to
+            given address
+          </td>
+        </tr>
+        <tr>
+          <td>001</td>
+          <td>LOAD1</td>
+          <td>Set Data Pointer 1 to given address</td>
+        </tr>
+        <tr>
+          <td>010</td>
+          <td>LOAD2</td>
+          <td>Set Data Pointer 2 to given address</td>
+        </tr>
+        <tr>
+          <td>011</td>
+          <td>STORE</td>
+          <td>
+            write Accumulator to Data Memory using address of Data Pointer 1
+          </td>
+        </tr>
+        <tr>
+          <td>100</td>
+          <td>ADD</td>
+          <td>
+            Set accumulator to result of Data Register 1 + Data Register 2
+          </td>
+        </tr>
+        <tr>
+          <td>101</td>
+          <td>SUB</td>
+          <td>
+            Set accumulator to result of Data Register 1 - Data Register 2
+          </td>
+        </tr>
+        <tr>
+          <td>110</td>
+          <td>MULT</td>
+          <td>
+            Set accumulator to result of Data Register 1 * Data Register 2
+          </td>
+        </tr>
+        <tr>
+          <td>111</td>
+          <td>STOP</td>
+          <td>Stop program</td>
+        </tr>
+      </table>
+    </div>
+    <footer class="flex justify-center p-4 bg-black text-white">
+      Made by
+      <a
+        href="https://portfolio-tomwhitticase.vercel.app/"
+        target="_blank"
+        class="px-1 underline"
+      >
+        Tom Whitticase</a
+      >
+    </footer>
+  </body>
+</html>
