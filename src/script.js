@@ -181,8 +181,8 @@ function loadExample() {
   if (i == 3) {
     document.getElementById(
       "code-editor"
-    ).value = `LOAD1 0\nLOAD2 1\nADD\nSTORE\nLOAD1 2 9\nLOAD2 0\nSUB\nLOAD1 3\nSTORE\nJUMP 0\nSTOP`;
-    document.getElementById("code-editor-data").value = `0\n1\n10\n0`;
+    ).value = `#count up to n\nLOAD1 0\nLOAD2 1\nADD\nSTORE\nLOAD1 2 9\nLOAD2 0\nSUB\nLOAD1 3\nSTORE\nJUMP 0\nSTOP`;
+    document.getElementById("code-editor-data").value = `0\n1\n#n\n10\n0`;
   }
 }
 

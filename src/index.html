@@ -26,17 +26,18 @@
     </div>
     <div class="flex flex-row flex-wrap justify-center">
       <div class="control-panel flex flex-col gap-2 p-2">
+        <h1>Load Example Program</h1>
         <select
           id="select-example"
           class="border border-black"
           onchange="loadExample()"
+          onclick="loadExample()"
         >
           <option>Add 2 numbers</option>
           <option>Factorial of a number</option>
           <option>Compare 2 numbers</option>
           <option>Count up to a number</option>
         </select>
-        <button class="btn-1" onclick="loadExample()">Load Example</button>
         <div class="flex gap-5">
           <div>
             <h1>Instructions</h1>
@@ -126,7 +127,7 @@
                   type="number"
                   min="1"
                   value="5"
-                  class="border border-black p-1 w-40"
+                  class="bg-black text-white p-1 w-40"
                 />
               </div>
               <div class="box">
