@@ -26,7 +26,11 @@
     </div>
     <div class="flex flex-row flex-wrap justify-center">
       <div class="control-panel flex flex-col gap-2 p-2">
-        <select id="select-example" class="border border-black">
+        <select
+          id="select-example"
+          class="border border-black"
+          onchange="loadExample()"
+        >
           <option>Add 2 numbers</option>
           <option>Factorial of a number</option>
           <option>Compare 2 numbers</option>
