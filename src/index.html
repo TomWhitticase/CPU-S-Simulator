@@ -26,16 +26,13 @@
     </div>
     <div class="flex flex-row flex-wrap justify-center">
       <div class="control-panel flex flex-col gap-2 p-2">
-        <select
-          id="select-example"
-          onclick="loadExample()"
-          class="border border-black"
-        >
-          <option>Load example program</option>
+        <select id="select-example" class="border border-black">
           <option>Add 2 numbers</option>
-          <option>Factorial of 5</option>
+          <option>Factorial of a number</option>
           <option>Compare 2 numbers</option>
+          <option>Count up to a number</option>
         </select>
+        <button class="btn-1" onclick="loadExample()">Load Example</button>
         <div class="flex gap-5">
           <div>
             <h1>Instructions</h1>
@@ -61,7 +58,7 @@
               <textarea
                 id="code-editor"
                 rows="16"
-                cols="12"
+                cols="16"
                 class="border-black border resize-none"
               ></textarea>
             </div>
@@ -99,7 +96,18 @@
         </div>
 
         <button id="compile" class="btn-1" onclick="compile()">Compile</button>
-        <button id="run" class="btn-1" onclick="run()">Run</button>
+        <span class="flex justify-between">
+          <button id="run" class="btn-1 flex-1 bg-green-600" onclick="run()">
+            Run
+          </button>
+          <button
+            id="stop"
+            class="btn-1 flex-1 bg-red-500"
+            onclick="stopProgram()"
+          >
+            Stop
+          </button>
+        </span>
       </div>
       <div class="flex flex-col m-2">
         <h1>CPU</h1>

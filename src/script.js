@@ -18,6 +18,8 @@ const selectExample = document.getElementById("select-example");
 const compileButton = document.getElementById("compile");
 const runButton = document.getElementById("run");
 
+let stop = true;
+
 let clock;
 
 const memorySize = 16;
@@ -59,7 +61,8 @@ function compile() {
   let lines = codeEditor.value.split("\n");
   let compiledLines = [];
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i] === "") continue;
+    if (lines[i] === "") continue; //ignore empty lines
+    if (lines[i][0] === "#") continue; //ignore comments
     const opcode = lines[i].split(" ")[0];
     const operand = lines[i].split(" ")[1];
 
@@ -115,7 +118,8 @@ function compile() {
   let dataLines = codeEditorData.value.split("\n");
   let compiledDataLines = [];
   for (let i = 0; i < dataLines.length; i++) {
-    if (dataLines[i] === "") continue;
+    if (dataLines[i] === "") continue; //ignore empty lines
+    if (dataLines[i][0] === "#") continue; //ignore comments
     const value = parseInt(dataLines[i]);
     if (!(value >= 0 && value <= 255)) {
       console.log("VAL: " + value);
@@ -155,26 +159,46 @@ function incrementProgramCounter() {
 
 function loadExample() {
   const i = selectExample.selectedIndex;
-  selectExample.selectedIndex = 0;
 
+  if (i == 0) {
+    document.getElementById(
+      "code-editor"
+    ).value = `#adds x and y\n#result in DM 0\nLOAD1 0\nLOAD2 1\nADD\nSTORE\nSTOP`;
+    document.getElementById("code-editor-data").value = `#x\n3\n#y\n2\n`;
+  }
   if (i == 1) {
     document.getElementById(
       "code-editor"
-    ).value = `LOAD1 0\nLOAD2 1\nADD\nSTORE\nSTOP`;
-    document.getElementById("code-editor-data").value = `0\n1`;
+    ).value = `#calculates n!\nLOAD1 0\nLOAD2 2\nMULT\nSTORE\nLOAD1 2\nLOAD2 3\nADD\nSTORE\nLOAD1 1\nLOAD2 3\nSUB\nSTORE\nLOAD1 1\nJUMP 0\nSTOP`;
+    document.getElementById("code-editor-data").value = `1\n#n\n5\n1\n1`;
   }
   if (i == 2) {
     document.getElementById(
       "code-editor"
-    ).value = `LOAD1 0\nLOAD2 2\nMULT\nSTORE\nLOAD1 2\nLOAD2 3\nADD\nSTORE\nLOAD1 1\nLOAD2 3\nSUB\nSTORE\nLOAD1 1\nJUMP 0\nSTOP`;
-    document.getElementById("code-editor-data").value = `1\n5\n1\n1`;
+    ).value = `#if x=y DM 2=1\nLOAD1 0\nLOAD2 1\nSUB\nSTORE\nJUMP 9\nLOAD1 2\nLOAD2 3\nADD\nSTORE\nSTOP`;
+    document.getElementById("code-editor-data").value = `#x\n3\n#y\n3\n0\n1`;
   }
   if (i == 3) {
     document.getElementById(
       "code-editor"
-    ).value = `LOAD1 0\nLOAD2 1\nSUB\nSTORE\nJUMP 9\nLOAD1 2\nLOAD2 3\nADD\nSTORE\nSTOP`;
-    document.getElementById("code-editor-data").value = `3\n3\n0\n1`;
+    ).value = `LOAD1 0\nLOAD2 1\nADD\nSTORE\nLOAD1 2 9\nLOAD2 0\nSUB\nLOAD1 3\nSTORE\nJUMP 0\nSTOP`;
+    document.getElementById("code-editor-data").value = `0\n1\n10\n0`;
   }
+}
+
+function stopProgram() {
+  const highestId = window.setTimeout(() => {
+    for (let i = highestId; i < timeOuts.length; i++) {
+      window.clearInterval(i);
+    }
+  }, 0);
+
+  stop = true;
+
+  compileButton.disabled = false;
+  compileButton.classList.remove("disabled");
+  runButton.disabled = false;
+  runButton.classList.remove("disabled");
 }
 
 const sleep = (d) => new Promise((resolve) => setTimeout(resolve, d));
@@ -239,12 +263,14 @@ async function run() {
   }
 
   log("START");
-  let stop = false;
+  stop = false;
   while (!stop) {
     ir = programLines[parseInt(ip, 2)].substring(0, 3);
+    attention(document.getElementById("instruction-memory-" + ip), "read");
     const operand = programLines[parseInt(ip, 2)].substring(3, 7);
     //decode instruction
     idc = decodeInstruction(ir);
+
     log(
       "EXECUTING LINE: " +
         formatRegister(ip) +
@@ -257,31 +283,42 @@ async function run() {
       case "JUMP": //JUMP
         if (dr1 != "00000000") {
           ip = operand;
-          console.log("JUMP!");
         } else {
           ip = binaryAddition(ip, 1, 4);
-          console.log("DONT JUMP");
         }
 
         break;
       case "LOAD1": //LOAD1
         dp1 = operand;
+
         dr1 = dataMemory[parseInt(operand, 2)];
+
+        attention(document.getElementById("data-memory-" + operand), "read");
         ip = binaryAddition(ip, 1, 4);
+
         break;
       case "LOAD2": //LOAD2
         dp2 = operand;
+
         dr2 = dataMemory[parseInt(operand, 2)];
+
+        attention(document.getElementById("data-memory-" + operand), "read");
         ip = binaryAddition(ip, 1, 4);
+
         break;
       case "STORE": //STORE
         dataMemory[parseInt(dp1, 2)] = acc;
+        attention(document.getElementById("data-memory-" + dp1), "write");
         dr1 = acc;
+
         ip = binaryAddition(ip, 1, 4);
+
         break;
       case "ADD": //ADD
         acc = binaryAddition(dr1, dr2, 8);
+
         ip = binaryAddition(ip, 1, 4);
+
         break;
       case "SUB": //SUB
         acc = binarySubtraction(dr1, dr2, 8);
@@ -303,7 +340,6 @@ async function run() {
 
     logRegisters();
     updateDisplay();
-
     await sleep(1000 / clock);
   }
   compileButton.disabled = false;
@@ -389,6 +425,21 @@ function toBinary(num, length) {
     num = binaryAddition(num, 1, length);
   }
   return num;
+}
+
+function attention(element, readOrWrite) {
+  if (readOrWrite == "read") {
+    element.classList.add("read");
+    setTimeout(function () {
+      element.classList.remove("read");
+    }, 100);
+  }
+  if (readOrWrite == "write") {
+    element.classList.add("write");
+    setTimeout(function () {
+      element.classList.remove("write");
+    }, 100);
+  }
 }
 
 //start
