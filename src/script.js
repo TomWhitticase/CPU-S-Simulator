@@ -287,6 +287,7 @@ function toggleLog() {
 function logLine(line) {
   if (line === "line") {
     log.innerHTML += `<div class="w-full border-white border-t-2"></div>`;
+    log.scrollTop = log.scrollHeight;
     return;
   }
   log.innerHTML += `<div>${line}</div>`;
