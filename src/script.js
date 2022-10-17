@@ -1,8 +1,13 @@
 const instructionMemory = document.getElementById("instruction-memory");
+const dataMonitor = document.getElementById("data-monitor");
 const dataMemory = document.getElementById("data-memory");
 const codeEditor = document.getElementById("code-editor");
+const codeDisplay = document.getElementById("code-display");
 const codeEditorData = document.getElementById("code-editor-data");
+const codeDisplayData = document.getElementById("code-display-data");
 const consoleDiv = document.getElementById("console");
+const registerLog = document.getElementById("register-log");
+const registerLogButton = document.getElementById("toggle-register-log");
 
 const instructionPointer = document.getElementById("instruction-pointer");
 const instructionRegister = document.getElementById("instruction-register");
@@ -18,6 +23,7 @@ const selectExample = document.getElementById("select-example");
 const compileButton = document.getElementById("compile");
 const runButton = document.getElementById("run");
 
+let doLogRegisters = false;
 let stop = true;
 
 let clock;
@@ -35,6 +41,7 @@ let idc = "";
 
 function clearMemory() {
   instructionMemory.innerHTML = "";
+  dataMonitor.innerHTML = "";
   for (let i = 0; i < memorySize; i++) {
     let memoryCell = `
     <div class="memory-cell">
@@ -53,14 +60,68 @@ function clearMemory() {
     </div>
     `;
     dataMemory.innerHTML += memoryCell;
+    let dataMonitorCell = `
+    <div class="data-monitor-cell" id="data-monitor-${i
+      .toString(2)
+      .padStart(4, "0")}"> 000 </div>
+    `;
+    dataMonitor.innerHTML += dataMonitorCell;
   }
+}
+
+codeEditor.addEventListener("input", displayCodeEditor);
+codeEditorData.addEventListener("input", displayCodeEditor);
+function displayCodeEditor() {
+  addColors = (editor, display) => {
+    //color comments green
+    let text = editor.innerText.split("");
+    let comment = false;
+    for (let i = 0; i < text.length; i++) {
+      if (!comment && text[i] === "#") {
+        comment = true;
+        text.splice(i, 0, `<span class="text-green-500">`);
+      }
+      if (comment && text[i] === "\n") {
+        comment = false;
+        text.splice(i, 0, `</span>`);
+      }
+    }
+    let joinedText = text.join("");
+    //color instructions yellow
+    if (editor === codeEditorData) {
+      //do not color instructions in data memory input
+      display.innerHTML = joinedText;
+      return;
+    }
+    const instructions = [
+      "LOAD1",
+      "LOAD2",
+      "ADD",
+      "SUB",
+      "MULT",
+      "STORE",
+      "STOP",
+      "JUMP",
+    ];
+    for (let i = 0; i < instructions.length; i++) {
+      joinedText = joinedText.replaceAll(
+        instructions[i],
+        `<span class="text-[#FAFA33]">${instructions[i]}</span>`
+      );
+    }
+    display.innerHTML = joinedText;
+  };
+
+  addColors(codeEditor, codeDisplay);
+  addColors(codeEditorData, codeDisplayData);
 }
 
 function compile() {
   clearMemory();
-  let lines = codeEditor.value.split("\n");
+  let lines = codeEditor.innerText.split("\n");
   let compiledLines = [];
   for (let i = 0; i < lines.length; i++) {
+    lines[i] = lines[i].split("#")[0]; //remove anything after '#' (comments)
     if (lines[i] === "") continue; //ignore empty lines
     if (lines[i][0] === "#") continue; //ignore comments
     const opcode = lines[i].split(" ")[0];
@@ -115,7 +176,7 @@ function compile() {
   }
 
   //data memory
-  let dataLines = codeEditorData.value.split("\n");
+  let dataLines = codeEditorData.innerText.split("\n");
   let compiledDataLines = [];
   for (let i = 0; i < dataLines.length; i++) {
     if (dataLines[i] === "") continue; //ignore empty lines
@@ -133,13 +194,21 @@ function compile() {
 }
 
 function error(msg) {
-  alert(msg);
+  document.getElementById("error").classList.remove("hidden");
+  document.getElementById("error-message").innerText = msg;
 }
 
 function loadDataToMemory(compiledDataLines) {
   for (let i = 0; i < compiledDataLines.length; i++) {
     const location = document.getElementById("data-memory-" + toBinary(i, 4));
     location.innerHTML = compiledDataLines[i];
+
+    const locationDec = document.getElementById(
+      "data-monitor-" + toBinary(i, 4)
+    );
+    locationDec.innerHTML = `${parseInt(compiledDataLines[i], 2)
+      .toString()
+      .padStart(3, "0")}`;
   }
 }
 
@@ -159,30 +228,30 @@ function incrementProgramCounter() {
 function loadExample() {
   const i = selectExample.selectedIndex;
 
+  let instructions = "";
+  let data = "";
   if (i == 0) {
-    document.getElementById(
-      "code-editor"
-    ).value = `#adds x and y\n#result in DM 0\nLOAD1 0\nLOAD2 1\nADD\nSTORE\nSTOP`;
-    document.getElementById("code-editor-data").value = `#x\n3\n#y\n2\n`;
+    instructions = `#adds x and y\n#result in DM 0\nLOAD1 0\nLOAD2 1\nADD\nSTORE\nSTOP`;
+    data = `3#x\n2#y`;
   }
   if (i == 1) {
-    document.getElementById(
-      "code-editor"
-    ).value = `#calculates n!\nLOAD1 0\nLOAD2 2\nMULT\nSTORE\nLOAD1 2\nLOAD2 3\nADD\nSTORE\nLOAD1 1\nLOAD2 3\nSUB\nSTORE\nLOAD1 1\nJUMP 0\nSTOP`;
-    document.getElementById("code-editor-data").value = `1\n#n\n5\n1\n1`;
+    instructions = `#calculates n!\nLOAD1 0\nLOAD2 2\nMULT\nSTORE\nLOAD1 2\nLOAD2 3\nADD\nSTORE\nLOAD1 1\nLOAD2 3\nSUB\nSTORE\nLOAD1 1\nJUMP 0\nSTOP`;
+    data = `1\n5#n\n1\n1`;
   }
   if (i == 2) {
-    document.getElementById(
-      "code-editor"
-    ).value = `#if x=y DM 2=1\nLOAD1 0\nLOAD2 1\nSUB\nSTORE\nJUMP 9\nLOAD1 2\nLOAD2 3\nADD\nSTORE\nSTOP`;
-    document.getElementById("code-editor-data").value = `#x\n3\n#y\n3\n0\n1`;
+    instructions = `#if x=y DM 2=1\nLOAD1 0\nLOAD2 1\nSUB\nSTORE\nJUMP 9\nLOAD1 2\nLOAD2 3\nADD\nSTORE\nSTOP`;
+    data = `3#x\n3#y\n0\n1`;
   }
   if (i == 3) {
-    document.getElementById(
-      "code-editor"
-    ).value = `#count up to n\nLOAD1 0\nLOAD2 1\nADD\nSTORE\nLOAD1 2 9\nLOAD2 0\nSUB\nLOAD1 3\nSTORE\nJUMP 0\nSTOP`;
-    document.getElementById("code-editor-data").value = `0\n1\n#n\n10\n0`;
+    instructions = `#count up to n\nLOAD1 0\nLOAD2 1\nADD\nSTORE\nLOAD1 2 9\nLOAD2 0\nSUB\nLOAD1 3\nSTORE\nJUMP 0\nSTOP`;
+    data = `0\n1\n10#n\n0`;
   }
+
+  codeEditor.innerText = instructions;
+  codeEditorData.innerText = data;
+
+  displayCodeEditor();
+  compile();
 }
 
 function stopProgram() {
@@ -192,6 +261,23 @@ function stopProgram() {
   compileButton.classList.remove("disabled");
   runButton.disabled = false;
   runButton.classList.remove("disabled");
+}
+
+function clearConsole() {
+  consoleDiv.innerHTML = "";
+}
+function toggleRegisterLog() {
+  if (registerLog.classList.contains("hidden")) {
+    registerLog.classList.remove("hidden");
+    registerLogButton.classList.remove("off");
+    registerLogButton.innerHTML = "Register Log ON&nbsp";
+    doLogRegisters = true;
+  } else {
+    registerLog.classList.add("hidden");
+    registerLogButton.classList.add("off");
+    registerLogButton.innerHTML = "Register Log OFF";
+    doLogRegisters = false;
+  }
 }
 
 const sleep = (d) => new Promise((resolve) => setTimeout(resolve, d));
@@ -237,12 +323,14 @@ async function run() {
   }
   const padChar = "-";
   function log(line) {
+    if (!doLogRegisters) return;
     consoleDiv.innerHTML += `<div class="border-white border p-1">${line}</div>`;
     consoleDiv.scrollTop = consoleDiv.scrollHeight;
   }
   function formatRegister(r) {
     return parseInt(r, 2).toString().padStart(3, padChar);
   }
+
   function logRegisters() {
     log(
       `RESULT  IP: ${formatRegister(ip)} IR: ${formatRegister(
@@ -272,6 +360,7 @@ async function run() {
         " WITH ADDRESS: " +
         formatRegister(operand)
     );
+
     switch (idc) {
       case "JUMP": //JUMP
         if (dr1 != "00000000") {
@@ -332,6 +421,7 @@ async function run() {
     }
 
     logRegisters();
+
     updateDisplay();
     console.log("T: " + 1000 / clock);
     await sleep(1000 / clock);
@@ -438,6 +528,7 @@ function attention(element, readOrWrite) {
 
 //start
 clearMemory();
+loadExample();
 
 /*
 ===Info===

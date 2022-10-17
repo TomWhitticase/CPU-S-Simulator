@@ -551,8 +551,14 @@ video {
   --tw-backdrop-sepia:  ;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
 body {
   margin: 0px;
+  scroll-behavior: smooth;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -572,8 +578,12 @@ h1 {
   font-weight: 700;
 }
 
+.data-monitor-cell {
+  --tw-text-opacity: 1;
+  color: rgb(103 232 249 / var(--tw-text-opacity));
+}
+
 .memory-cell {
-  margin: 0.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -620,12 +630,11 @@ h1 {
   background-color: rgb(156 163 175 / var(--tw-bg-opacity)) !important;
 }
 
-textarea {
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-  padding: 0.25rem;
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
+.off {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity)) !important;
+  --tw-text-opacity: 1 !important;
+  color: rgb(0 0 0 / var(--tw-text-opacity)) !important;
 }
 
 #control-unit {
@@ -662,6 +671,46 @@ textarea {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.top-1 {
+  top: 0.25rem;
+}
+
+.right-1 {
+  right: 0.25rem;
+}
+
+.top-2 {
+  top: 0.5rem;
+}
+
+.right-8 {
+  right: 2rem;
+}
+
+.z-\[100\] {
+  z-index: 100;
+}
+
+.z-10 {
+  z-index: 10;
+}
+
 .m-8 {
   margin: 2rem;
 }
@@ -683,8 +732,28 @@ textarea {
   display: table;
 }
 
+.hidden {
+  display: none;
+}
+
+.h-full {
+  height: 100%;
+}
+
 .h-40 {
   height: 10rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.w-44 {
+  width: 11rem;
+}
+
+.w-20 {
+  width: 5rem;
 }
 
 .w-40 {
@@ -707,6 +776,10 @@ textarea {
   --tw-border-spacing-x: 1rem;
   --tw-border-spacing-y: 1rem;
   border-spacing: var(--tw-border-spacing-x) var(--tw-border-spacing-y);
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .resize-none {
@@ -753,6 +826,14 @@ textarea {
   overflow-y: auto;
 }
 
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+.whitespace-pre-line {
+  white-space: pre-line;
+}
+
 .border {
   border-width: 1px;
 }
@@ -767,9 +848,22 @@ textarea {
   border-color: rgb(255 255 255 / var(--tw-border-opacity));
 }
 
+.bg-black\/50 {
+  background-color: rgb(0 0 0 / 0.5);
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+}
+
+.bg-transparent {
+  background-color: transparent;
 }
 
 .bg-green-600 {
@@ -791,12 +885,20 @@ textarea {
   padding: 1rem;
 }
 
+.p-8 {
+  padding: 2rem;
+}
+
 .p-2 {
   padding: 0.5rem;
 }
 
 .p-1 {
   padding: 0.25rem;
+}
+
+.p-\[0\.1rem\] {
+  padding: 0.1rem;
 }
 
 .py-10 {
@@ -813,9 +915,42 @@ textarea {
   text-align: left;
 }
 
+.text-center {
+  text-align: center;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity));
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .text-white {
@@ -823,9 +958,33 @@ textarea {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.text-transparent {
+  color: transparent;
+}
+
+.text-green-500 {
+  --tw-text-opacity: 1;
+  color: rgb(34 197 94 / var(--tw-text-opacity));
+}
+
+.text-\[\#FAFA33\] {
+  --tw-text-opacity: 1;
+  color: rgb(250 250 51 / var(--tw-text-opacity));
+}
+
 .underline {
   -webkit-text-decoration-line: underline;
           text-decoration-line: underline;
+}
+
+.caret-white {
+  caret-color: #fff;
+}
+
+.shadow-lg {
+  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 @media (min-width: 1024px) {

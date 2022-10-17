@@ -3,15 +3,22 @@
 @tailwind utilities;
 
 @layer components {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+  }
   body {
-    @apply font-mono text-sm lg:text-base m-0;
+    @apply font-mono text-sm lg:text-base m-0 scroll-smooth;
   }
   h1 {
     @apply text-xl font-bold m-2;
   }
+  .data-monitor-cell {
+    @apply text-cyan-300;
+  }
 
   .memory-cell {
-    @apply text-sm flex justify-between items-center bg-white p-1 m-1;
+    @apply text-sm flex justify-between items-center bg-white p-1;
   }
   .memory-cell > div {
     @apply bg-black text-white mx-2 px-1;
@@ -29,10 +36,9 @@
   .disabled {
     @apply !bg-gray-400;
   }
-  textarea {
-    @apply bg-black text-white p-1;
+  .off {
+    @apply !bg-white !text-black;
   }
-
   #control-unit {
     @apply bg-yellow-500;
   }
