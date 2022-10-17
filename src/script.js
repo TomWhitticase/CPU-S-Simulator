@@ -287,10 +287,10 @@ function toggleLog() {
 function logLine(line) {
   if (line === "line") {
     log.innerHTML += `<div class="w-full border-white border-t-2"></div>`;
-    log.scrollTop = log.scrollHeight;
-    return;
+  } else {
+    log.innerHTML += `<div>${line}</div>`;
   }
-  log.innerHTML += `<div>${line}</div>`;
+  log.scrollTop = log.scrollHeight;
 }
 
 const sleep = (d) => new Promise((resolve) => setTimeout(resolve, d));
