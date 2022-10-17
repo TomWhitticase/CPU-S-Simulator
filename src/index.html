@@ -55,6 +55,7 @@
           <option>Factorial of a number</option>
           <option>Compare 2 numbers</option>
           <option>Count up to a number</option>
+          <option>Left shift by n places</option>
         </select>
         <div class="flex flex-wrap gap-5">
           <div>
@@ -162,11 +163,11 @@
         </span>
         <span class="flex justify-between">
           <button
-            id="toggle-register-log"
+            id="toggle-log-button"
             class="btn-1 bg-black text-white off border border-black"
-            onclick="toggleRegisterLog()"
+            onclick="toggleLog()"
           >
-            Register Log OFF
+            Log OFF
           </button>
           <button id="run" class="btn-1 flex-1 bg-green-600" onclick="run()">
             Run
@@ -257,17 +258,17 @@
       </div>
     </div>
 
-    <div id="register-log" class="flex justify-center hidden">
-      <div class="w-[50rem]">
+    <div id="log-container" class="flex justify-center hidden">
+      <div class="w-full m-auto">
         <h1>Log</h1>
         <div class="relative">
           <div
-            id="console"
-            class="flex flex-col overflow-y-auto bg-black text-white h-40 text-xs lg:text-base m-2 scroll-smooth"
+            id="log"
+            class="flex flex-col overflow-y-auto bg-black text-white h-80 text-xs lg:text-base"
           ></div>
           <div
             class="absolute top-2 right-8 text-blue cursor-pointer p-[0.1rem] text-sm bg-white text-black"
-            onclick="clearConsole()"
+            onclick="clearLog()"
           >
             Clear
           </div>

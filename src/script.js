@@ -5,9 +5,9 @@ const codeEditor = document.getElementById("code-editor");
 const codeDisplay = document.getElementById("code-display");
 const codeEditorData = document.getElementById("code-editor-data");
 const codeDisplayData = document.getElementById("code-display-data");
-const consoleDiv = document.getElementById("console");
-const registerLog = document.getElementById("register-log");
-const registerLogButton = document.getElementById("toggle-register-log");
+const log = document.getElementById("log");
+const logContainer = document.getElementById("log-container");
+const toggleLogButton = document.getElementById("toggle-log-button");
 
 const instructionPointer = document.getElementById("instruction-pointer");
 const instructionRegister = document.getElementById("instruction-register");
@@ -23,7 +23,7 @@ const selectExample = document.getElementById("select-example");
 const compileButton = document.getElementById("compile");
 const runButton = document.getElementById("run");
 
-let doLogRegisters = false;
+let doLog = false;
 let stop = true;
 
 let clock;
@@ -243,8 +243,12 @@ function loadExample() {
     data = `3#x\n3#y\n0\n1`;
   }
   if (i == 3) {
-    instructions = `#count up to n\nLOAD1 0\nLOAD2 1\nADD\nSTORE\nLOAD1 2 9\nLOAD2 0\nSUB\nLOAD1 3\nSTORE\nJUMP 0\nSTOP`;
+    instructions = `#count up to n\nLOAD1 0\nLOAD2 1\nADD\nSTORE\nLOAD1 2\nLOAD2 0\nSUB\nLOAD1 3\nSTORE\nJUMP 0\nSTOP`;
     data = `0\n1\n10#n\n0`;
+  }
+  if (i == 4) {
+    instructions = `#Binary left shift x by n places\nLOAD1 0\nLOAD2 0\nADD\nSTORE\nLOAD1 1\nLOAD2 2\nSUB\nSTORE\nJUMP 0\nSTOP`;
+    data = `1#x\n3#n\n1`;
   }
 
   codeEditor.innerText = instructions;
@@ -263,21 +267,29 @@ function stopProgram() {
   runButton.classList.remove("disabled");
 }
 
-function clearConsole() {
-  consoleDiv.innerHTML = "";
+function clearLog() {
+  log.innerHTML = "";
 }
-function toggleRegisterLog() {
-  if (registerLog.classList.contains("hidden")) {
-    registerLog.classList.remove("hidden");
-    registerLogButton.classList.remove("off");
-    registerLogButton.innerHTML = "Register Log ON&nbsp";
-    doLogRegisters = true;
+function toggleLog() {
+  if (logContainer.classList.contains("hidden")) {
+    logContainer.classList.remove("hidden");
+    toggleLogButton.classList.remove("off");
+    toggleLogButton.innerHTML = "Log ON&nbsp";
+    doLog = true;
   } else {
-    registerLog.classList.add("hidden");
-    registerLogButton.classList.add("off");
-    registerLogButton.innerHTML = "Register Log OFF";
-    doLogRegisters = false;
+    logContainer.classList.add("hidden");
+    toggleLogButton.classList.add("off");
+    toggleLogButton.innerHTML = "Log OFF";
+    doLog = false;
   }
+}
+
+function logLine(line) {
+  if (line === "line") {
+    log.innerHTML += `<div class="w-full border-white border-t-2"></div>`;
+    return;
+  }
+  log.innerHTML += `<div>${line}</div>`;
 }
 
 const sleep = (d) => new Promise((resolve) => setTimeout(resolve, d));
@@ -321,97 +333,83 @@ async function run() {
     instructionDecoder.innerHTML = idc;
     loadDataToMemory(dataMemory);
   }
-  const padChar = "-";
-  function log(line) {
-    if (!doLogRegisters) return;
-    consoleDiv.innerHTML += `<div class="border-white border p-1">${line}</div>`;
-    consoleDiv.scrollTop = consoleDiv.scrollHeight;
-  }
-  function formatRegister(r) {
-    return parseInt(r, 2).toString().padStart(3, padChar);
-  }
 
-  function logRegisters() {
-    log(
-      `RESULT  IP: ${formatRegister(ip)} IR: ${formatRegister(
-        ir
-      )} IDC: ${idc.padStart(5, padChar)} ACC: ${formatRegister(
-        acc
-      )} DP1: ${formatRegister(dp1)} DP2: ${formatRegister(
-        dp2
-      )} DR1: ${formatRegister(dr1)} DR2: ${formatRegister(dr2)}`
-    );
-  }
-
-  log("START");
   stop = false;
+  logLine("START");
   while (!stop) {
     ir = programLines[parseInt(ip, 2)].substring(0, 3);
+    logLine("line");
+    logLine("FETCHING INSTRUCTION AT ADDRESS: " + parseInt(ip, 2));
     attention(document.getElementById("instruction-memory-" + ip), "read");
     const operand = programLines[parseInt(ip, 2)].substring(3, 7);
     //decode instruction
     idc = decodeInstruction(ir);
-
-    log(
-      "EXECUTING LINE: " +
-        formatRegister(ip) +
-        " INSTRUCTION: " +
-        idc.padStart(5, padChar) +
-        " WITH ADDRESS: " +
-        formatRegister(operand)
-    );
-
+    logLine("DECODED INSTRUCTION: " + idc);
     switch (idc) {
       case "JUMP": //JUMP
         if (dr1 != "00000000") {
           ip = operand;
+          logLine("DR1 != 0 THEREFORE JUMP");
+          logLine("SET IP TO ADDRESS:" + ip);
         } else {
           ip = binaryAddition(ip, 1, 4);
+          logLine("INCREMENT IP TO:" + ip);
         }
 
         break;
       case "LOAD1": //LOAD1
         dp1 = operand;
-
+        logLine("SET DP1 TO ADDRESS:" + dp1);
         dr1 = dataMemory[parseInt(operand, 2)];
-
+        logLine("FETCH DATA FROM ADDRESS:" + dp1);
+        logLine("SET DR1 TO FETCHED VALUE:" + dr1);
         attention(document.getElementById("data-memory-" + operand), "read");
         ip = binaryAddition(ip, 1, 4);
+        logLine("INCREMENT IP TO:" + ip);
 
         break;
       case "LOAD2": //LOAD2
         dp2 = operand;
-
+        logLine("SET DP2 TO ADDRESS:" + dp2);
         dr2 = dataMemory[parseInt(operand, 2)];
-
+        logLine("FETCH DATA FROM ADDRESS:" + dp2);
+        logLine("SET DR2 TO FETCHED VALUE:" + dr2);
         attention(document.getElementById("data-memory-" + operand), "read");
         ip = binaryAddition(ip, 1, 4);
-
+        logLine("INCREMENT IP TO:" + ip);
         break;
       case "STORE": //STORE
-        dataMemory[parseInt(dp1, 2)] = acc;
-        attention(document.getElementById("data-memory-" + dp1), "write");
         dr1 = acc;
+        logLine("SET DR1 TO ACC:" + acc);
+        dataMemory[parseInt(dp1, 2)] = acc;
+        logLine("SET DM " + dp1 + " TO ACC:" + acc);
+        attention(document.getElementById("data-memory-" + dp1), "write");
 
         ip = binaryAddition(ip, 1, 4);
-
+        logLine("INCREMENT IP TO:" + ip);
         break;
       case "ADD": //ADD
         acc = binaryAddition(dr1, dr2, 8);
-
+        logLine("SET ACC TO DR1 + DR2:" + acc);
         ip = binaryAddition(ip, 1, 4);
-
+        logLine("INCREMENT IP TO:" + ip);
         break;
       case "SUB": //SUB
         acc = binarySubtraction(dr1, dr2, 8);
+        logLine("SET ACC TO DR1 - DR2:" + acc);
         ip = binaryAddition(ip, 1, 4);
+        logLine("INCREMENT IP TO:" + ip);
         break;
       case "MULT": //MULT
         acc = binaryMultiplication(dr1, dr2, 8);
+        logLine("SET ACC TO DR1 * DR2:" + acc);
         ip = binaryAddition(ip, 1, 4);
+        logLine("INCREMENT IP TO:" + ip);
         break;
       case "STOP": //STOP
         ip = "0000";
+        logLine("SET IP TO:" + ip);
+        logLine("STOP");
         stop = true;
         break;
       default:
@@ -420,10 +418,7 @@ async function run() {
         break;
     }
 
-    logRegisters();
-
     updateDisplay();
-    console.log("T: " + 1000 / clock);
     await sleep(1000 / clock);
   }
   compileButton.disabled = false;
